@@ -1,0 +1,6 @@
+name: TroveMC
+main: me.andrew.trovemc.TroveMC
+version: 1.0.0
+author: AndrewAubury
+api-version: 1.13
+load: startup
