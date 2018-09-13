@@ -1,17 +1,18 @@
 package me.andrew.trovemc.events;
 
 import me.andrew.trovemc.TroveMC;
+import me.andrew.trovemc.managers.ChatManager;
+import me.andrew.trovemc.objects.Config;
 import me.andrew.trovemc.populators.CornerStonePopulator;
-import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.world.WorldInitEvent;
-import org.bukkit.material.Directional;
-
-import java.util.Random;
 
 /**
  * ------------------------------
@@ -23,14 +24,56 @@ import java.util.Random;
 public class ChunkEvents implements Listener {
 
     private TroveMC troveMC;
+    FileConfiguration chatConfig;
+
 
 public ChunkEvents(TroveMC troveMC){
     this.troveMC = troveMC;
+    chatConfig = new Config(troveMC.getDataFolder().getPath(), "lang.yml").getConfig();
 }
 
     @EventHandler
-    public void onChunkLoad(WorldInitEvent e) {
-        e.getWorld().getPopulators().add(new CornerStonePopulator());
+    public void onWorldInit(WorldInitEvent e) {
+        e.getWorld().getPopulators().add(new CornerStonePopulator(troveMC));
     }
 
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent e) {
+        if (CornerStonePopulator.isPlot(e.getBlock().getChunk())) {
+            e.setCancelled(true);
+            ChatManager.getInstance().sendMessageFromConfig(e.getPlayer(), "cant_break", true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        if (CornerStonePopulator.isPlot(e.getBlock().getChunk())) {
+            e.setCancelled(true);
+            ChatManager.getInstance().sendMessageFromConfig(e.getPlayer(), "cant_place", true);
+        }
+    }
+
+    @EventHandler
+    public void onBlockExplode(BlockExplodeEvent e) {
+        if (e.blockList() == null) {
+            return;
+        }
+        for (Block b : e.blockList()) {
+            if (CornerStonePopulator.isPlot(b.getChunk())) {
+                e.blockList().remove(b);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent e) {
+        if (e.blockList() == null) {
+            return;
+        }
+        for (Block b : e.blockList()) {
+            if (CornerStonePopulator.isPlot(b.getChunk())) {
+                e.blockList().remove(b);
+            }
+        }
+    }
 }

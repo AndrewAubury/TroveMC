@@ -1,5 +1,6 @@
 package me.andrew.trovemc;
 
+import lombok.Getter;
 import me.andrew.trovemc.events.ChunkEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -12,8 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class TroveMC extends JavaPlugin{
 
+    @Getter
+    public TroveMC instance;
+
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new ChunkEvents(this), this);
+        saveDefaultConfig();
+        instance = this;
     }
 }
