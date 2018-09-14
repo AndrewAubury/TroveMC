@@ -17,8 +17,8 @@
             <url>http://ci.athion.net/job/FastAsyncWorldEdit/ws/mvn/</url>
         </repository>
         <repository>
-            <id>sk89q-repo</id>
-            <url>>http://maven.sk89q.com/repo/</url>
+            <id>minepos</id>
+            <url>https://repo.minepos.net/libs-release/</url>
         </repository>
 
     </repositories>
@@ -36,15 +36,18 @@
             <version>1.18.2</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- FAWE API -->
         <dependency>
             <groupId>com.boydti</groupId>
             <artifactId>fawe-api</artifactId>
             <version>latest</version>
         </dependency>
+
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
-            <version>6.0.0-SNAPSHOT</version>
+            <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

@@ -2,10 +2,11 @@ package me.andrew.trovemc.managers;
 
 
 import com.boydti.fawe.object.schematic.Schematic;
+import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import me.andrew.trovemc.TroveMC;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -62,18 +63,40 @@ public class PlotManager {
         Chunk c = e.getClickedBlock().getLocation().getChunk();
         plotHeights.remove(c);
         plotHeights.put(c, e.getClickedBlock().getLocation().clone().subtract(0, 1, 0).getBlockY());
-        activatePlot(e.getPlayer(), c);
         e.getClickedBlock().setType(Material.AIR);
+        activatePlot(e.getPlayer(), c);
     }
 
     public void activatePlot(Player p, Chunk c) {
         deactivatePlot(p); //Make sure they dont have one pre-existed
 
 
+        Location start = c.getBlock(0, 0, 0).getLocation().clone();
         Location loc = c.getBlock(0, 0, 0).getLocation().clone();
         loc.setY(plotHeights.get(c));
         activePlots.put(p.getUniqueId(), c);
 
+        String path = JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/plots/";
+        File file = new File(path + "plot-" + p.getUniqueId() + ".schematic");
+
+        if (file.exists()) {
+            try {
+                Location pos1 = c.getBlock(0, 0, 0).getLocation();
+                Location pos2 = c.getBlock(15, 15, 15).getLocation();
+
+                pos1.setY(plotHeights.get(c) - 50);
+                pos2.setY(plotHeights.get(c) - 150);
+
+                Vector bot = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
+                Vector top = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
+
+                Schematic s = ClipboardFormat.SCHEMATIC.load(file);
+                s.paste(new BukkitWorld(c.getWorld()), bot).commit();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         //TODO The code so that plots can be made (copied from schem if they have one)
         //At this point loc is set to the 1st X, Z of the chunk with Y at the plot level;
 
@@ -88,7 +111,9 @@ public class PlotManager {
         }
         Chunk c = activePlots.get(p.getUniqueId());
 
-        //TODO Do deactivation here
+        savePlot(p, c);
+
+        resetPlot(c);
 
         plotHeights.remove(c);
         activePlots.remove(p.getUniqueId());
@@ -98,10 +123,23 @@ public class PlotManager {
         return c.getBlock(10, 10, 10).getType() == Material.BEDROCK || activePlots.containsValue(c);
     }
 
+    public void resetPlot(Chunk c) {
+        if (isPlot(c)) {
+            EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(new BukkitWorld(c.getWorld()), 999999999);
+            session.getQueue().regenerateChunk(c.getX(), c.getZ(), null, null);
+            session.getQueue().enqueue();
+        }
+    }
+
     public void savePlot(Player p, Chunk c) {
         ensureFolderExists("plots");
         String path = JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/plots/";
         File file = new File(path + "plot-" + p.getUniqueId() + ".schematic");
+
+        if (file.exists()) {
+            file.delete();
+        }
+
         Location pos1 = c.getBlock(0, 0, 0).getLocation();
         Location pos2 = c.getBlock(15, 15, 15).getLocation();
 
@@ -111,16 +149,14 @@ public class PlotManager {
         Vector bot = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
         Vector top = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
 
+        Vector size = new Vector(top.getX() - bot.getX() + 1, top.getY() - bot.getY() - 1, top.getZ() - bot.getZ() + 1);
 
-        CuboidRegion region = new CuboidRegion(new BukkitWorld(c.getWorld()), bot, top);
-//        CuboidRegion region = new CuboidRegion(BukkitUtil.getLocalWorld(c.getWorld()),bot,top);
-        
-        Schematic schem = new Schematic(region);
-
+//TODO NO SAVING IN PLACE
         try {
+            Schematic schem = new Schematic(null);
             schem.save(file, ClipboardFormat.SCHEMATIC);
             ChatManager.getInstance().sendMessage(p, "&aSaved!", true);
-        } catch (IOException e) {
+        } catch (Exception e) {
             ChatManager.getInstance().sendMessage(p, "&Error! Check Console.", true);
 
             e.printStackTrace();

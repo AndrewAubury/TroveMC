@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.andrew.trovemc.events.ChunkEvents;
 import me.andrew.trovemc.events.InteractionEvents;
 import me.andrew.trovemc.events.PlotBuildingEvents;
+import me.andrew.trovemc.managers.ChatManager;
 import me.andrew.trovemc.managers.PlotManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -36,6 +37,11 @@ public class TroveMC extends JavaPlugin{
         if (label.equalsIgnoreCase("testplotsave")) {
             Player p = (Player) sender;
             PlotManager.getInstance().savePlot(p, p.getLocation().getChunk());
+        }
+        if (label.equalsIgnoreCase("deactivateplot")) {
+            Player p = (Player) sender;
+            PlotManager.getInstance().deactivatePlot(p);
+            ChatManager.getInstance().sendMessage(p, "&aPlot Deactivated", true);
         }
         return false;
     }
