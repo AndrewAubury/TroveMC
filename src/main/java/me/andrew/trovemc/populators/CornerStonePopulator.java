@@ -1,6 +1,7 @@
 package me.andrew.trovemc.populators;
 
 import me.andrew.trovemc.TroveMC;
+import me.andrew.trovemc.managers.PlotManager;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -25,7 +26,7 @@ public class CornerStonePopulator extends BlockPopulator {
     }
 
     public static boolean isPlot(Chunk c) {
-        return c.getBlock(10, 10, 10).getType() == Material.BEDROCK;
+        return PlotManager.getInstance().isPlot(c);
     }
 
     public void populate(World world, Random random, final Chunk c) {
@@ -112,7 +113,7 @@ public class CornerStonePopulator extends BlockPopulator {
     }
 
     private Location locationAtY(Location loc, int y) {
-        loc.setY(y);
+        loc.clone().setY(y);
         return loc;
     }
 
@@ -123,7 +124,16 @@ public class CornerStonePopulator extends BlockPopulator {
     }
 
     public boolean canBeCornerstone(Chunk c, Material... mats) {
-        return true;
+        boolean canBe = true;
+        int Y_MIN = 60;
+        int Y_MAX = 150;
+
+        int cX = c.getX() * 16;
+        int cZ = c.getZ() * 16;
+
+        Location loc = nextBlockUP(c, cX, cZ);
+
+        return canBe;
     }
 
     public void setCornerStoneSign(Block b){

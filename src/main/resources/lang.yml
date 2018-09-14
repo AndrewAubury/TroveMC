@@ -2,3 +2,8 @@ prefix: "&7Trove &8|&7 "
 
 cant_place: "&cYou cant place a block in a un-activated plot"
 cant_break: "&cYou cant break a block in a un-activated plot"
+
+activated: "&aYou have just activated this plot."
+
+max_up: "&cYou may not build higher then 150 blocks from the plot base"
+max_down: "&cYou may not build lower then 50 blocks from the plot base"

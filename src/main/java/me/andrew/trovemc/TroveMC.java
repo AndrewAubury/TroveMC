@@ -2,6 +2,12 @@ package me.andrew.trovemc;
 
 import lombok.Getter;
 import me.andrew.trovemc.events.ChunkEvents;
+import me.andrew.trovemc.events.InteractionEvents;
+import me.andrew.trovemc.events.PlotBuildingEvents;
+import me.andrew.trovemc.managers.PlotManager;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -18,8 +24,19 @@ public class TroveMC extends JavaPlugin{
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(new ChunkEvents(this), this);
+        getServer().getPluginManager().registerEvents(new ChunkEvents(this), this);
+        getServer().getPluginManager().registerEvents(new InteractionEvents(), this);
+        getServer().getPluginManager().registerEvents(new PlotBuildingEvents(), this);
         saveDefaultConfig();
         instance = this;
+    }
+
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (label.equalsIgnoreCase("testplotsave")) {
+            Player p = (Player) sender;
+            PlotManager.getInstance().savePlot(p, p.getLocation().getChunk());
+        }
+        return false;
     }
 }
