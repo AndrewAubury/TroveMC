@@ -2,9 +2,11 @@ package me.andrew.trovemc.populators;
 
 import me.andrew.trovemc.TroveMC;
 import me.andrew.trovemc.managers.PlotManager;
-import org.bukkit.*;
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
 import org.bukkit.generator.BlockPopulator;
 
@@ -26,7 +28,7 @@ public class CornerStonePopulator extends BlockPopulator {
     }
 
     public static boolean isPlot(Chunk c) {
-        return PlotManager.getInstance().isPlot(c);
+        return c.getBlock(10, 10, 10).getType() == Material.BEDROCK;
     }
 
     public void populate(World world, Random random, final Chunk c) {
@@ -108,12 +110,12 @@ public class CornerStonePopulator extends BlockPopulator {
     }
 
     private Location nextBlockUP(Chunk c, int x, int z){
-        Location loc = c.getWorld().getHighestBlockAt(x, z).getLocation();
+        Location loc = c.getWorld().getHighestBlockAt(x, z).getLocation().clone();
         return loc;//.add(0,1,0);
     }
 
     private Location locationAtY(Location loc, int y) {
-        loc.clone().setY(y);
+        loc.setY(y);
         return loc;
     }
 
@@ -138,24 +140,14 @@ public class CornerStonePopulator extends BlockPopulator {
 
     public void setCornerStoneSign(Block b){
 
-
-        //A sign can hold 14 Chars
-        String line1 = ChatColor.translateAlternateColorCodes('&',"&7[&8Cornerstone&7]");
-        String line2 = ChatColor.translateAlternateColorCodes('&',"&8Right click");
-        String line3 = ChatColor.translateAlternateColorCodes('&',"&8this sign to");
-        String line4 = ChatColor.translateAlternateColorCodes('&',"&7Activate");
-        b.setType(Material.WALL_SIGN);
-
-        org.bukkit.material.Sign matSign = new org.bukkit.material.Sign(Material.WALL_SIGN);
-        matSign.setFacingDirection(BlockFace.EAST);
-
+        String[] text = PlotManager.getInstance().getSignText();
+        b.setType(Material.SIGN);
 
         Sign s = (Sign) b.getState();
-        s.setData(matSign);
-        s.setLine(0,line1);
-        s.setLine(1,line2);
-        s.setLine(2,line3);
-        s.setLine(3,line4);
+        s.setLine(0, text[0]);
+        s.setLine(1, text[1]);
+        s.setLine(2, text[2]);
+        s.setLine(3, text[3]);
 
         s.update();
     }

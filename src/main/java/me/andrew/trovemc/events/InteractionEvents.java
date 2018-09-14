@@ -1,7 +1,6 @@
 package me.andrew.trovemc.events;
 
 import me.andrew.trovemc.managers.PlotManager;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -20,12 +19,20 @@ public class InteractionEvents implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
-        if (e.getAction() == Action.LEFT_CLICK_BLOCK || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block b = e.getClickedBlock();
-            if (b.getType().equals(Material.SIGN)) {
+//            ChatManager.getInstance().sendMessage(e.getPlayer(),"&aRight Clicked Block", true);
+            if (b.getState() instanceof Sign) {
                 Sign s = (Sign) b.getState();
-                if (s.getLines() == PlotManager.getInstance().getSignText()) {
+//                ChatManager.getInstance().sendMessage(e.getPlayer(),"&aRight Clicked Sign", true);
+
+                if (s.getLine(0).equals(PlotManager.getInstance().getSignText()[0])) {
+//                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&aRight Clicked Plot Sign", true);
                     PlotManager.getInstance().activateSignClicked(e);
+                } else {
+//                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&cRight Clicked other sign", true);
+//                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&cExpected:&r "+PlotManager.getInstance().getSignText()[0], true);
+//                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&cFound:&r "+s.getLine(0), true);
                 }
             }
         } else {

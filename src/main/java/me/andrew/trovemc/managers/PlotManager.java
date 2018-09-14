@@ -1,6 +1,11 @@
 package me.andrew.trovemc.managers;
 
 
+import com.boydti.fawe.object.schematic.Schematic;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.bukkit.BukkitWorld;
+import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.regions.CuboidRegion;
 import me.andrew.trovemc.TroveMC;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -11,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -93,6 +99,7 @@ public class PlotManager {
     }
 
     public void savePlot(Player p, Chunk c) {
+        ensureFolderExists("plots");
         String path = JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/plots/";
         File file = new File(path + "plot-" + p.getUniqueId() + ".schematic");
         Location pos1 = c.getBlock(0, 0, 0).getLocation();
@@ -101,20 +108,23 @@ public class PlotManager {
         pos1.setY(plotHeights.get(c) - 50);
         pos2.setY(plotHeights.get(c) - 150);
 
-//        Vector bot = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
-//        Vector top = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
-//        CuboidRegion  region = new CuboidRegion(BukkitUtil.getLocalWorld(c.getWorld()), BukkitUtil.toVector(pos1), BukkitUtil.toVector(pos2));
-//
-//        Schematic schem = new Schematic(region);
-//
-//        try {
-//            schem.save(file, ClipboardFormat.SCHEMATIC);
-//            ChatManager.getInstance().sendMessage(p, "&aSaved!",true);
-//        } catch (IOException e) {
-//            ChatManager.getInstance().sendMessage(p, "&Error! Check Console.",true);
-//
-//            e.printStackTrace();
-//        }
+        Vector bot = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
+        Vector top = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
+
+
+        CuboidRegion region = new CuboidRegion(new BukkitWorld(c.getWorld()), bot, top);
+//        CuboidRegion region = new CuboidRegion(BukkitUtil.getLocalWorld(c.getWorld()),bot,top);
+        
+        Schematic schem = new Schematic(region);
+
+        try {
+            schem.save(file, ClipboardFormat.SCHEMATIC);
+            ChatManager.getInstance().sendMessage(p, "&aSaved!", true);
+        } catch (IOException e) {
+            ChatManager.getInstance().sendMessage(p, "&Error! Check Console.", true);
+
+            e.printStackTrace();
+        }
     }
 
     public int getPlotHeight(Chunk c) {
@@ -132,5 +142,12 @@ public class PlotManager {
 
     private String cc(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
+    }
+
+    public void ensureFolderExists(String s) {
+        File f = new File(JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/" + s + "/");
+        if (!f.exists()) {
+            f.mkdirs();
+        }
     }
 }
