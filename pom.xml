@@ -47,7 +47,7 @@
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldedit</artifactId>
-            <version>LATEST</version>
+            <version>0.2.4b</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

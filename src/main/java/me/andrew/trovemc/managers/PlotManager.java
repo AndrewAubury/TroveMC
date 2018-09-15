@@ -7,6 +7,8 @@ import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.world.World;
 import me.andrew.trovemc.TroveMC;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -77,7 +79,7 @@ public class PlotManager {
         activePlots.put(p.getUniqueId(), c);
 
         String path = JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/plots/";
-        File file = new File(path + "plot-" + p.getUniqueId() + ".schematic");
+        File file = new File(path + "plot-" + p.getUniqueId() + ".nbt");
 
         if (file.exists()) {
             try {
@@ -90,7 +92,7 @@ public class PlotManager {
                 Vector bot = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
                 Vector top = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
 
-                Schematic s = ClipboardFormat.SCHEMATIC.load(file);
+                Schematic s = ClipboardFormat.STRUCTURE.load(file);
                 s.paste(new BukkitWorld(c.getWorld()), bot).commit();
 
             } catch (IOException e) {
@@ -134,7 +136,7 @@ public class PlotManager {
     public void savePlot(Player p, Chunk c) {
         ensureFolderExists("plots");
         String path = JavaPlugin.getProvidingPlugin(TroveMC.class).getDataFolder().getPath() + "/plots/";
-        File file = new File(path + "plot-" + p.getUniqueId() + ".schematic");
+        File file = new File(path + "plot-" + p.getUniqueId() + ".nbt");
 
         if (file.exists()) {
             file.delete();
@@ -151,16 +153,24 @@ public class PlotManager {
 
         Vector size = new Vector(top.getX() - bot.getX() + 1, top.getY() - bot.getY() - 1, top.getZ() - bot.getZ() + 1);
 
-//TODO NO SAVING IN PLACE
+
         try {
-            Schematic schem = new Schematic(null);
-            schem.save(file, ClipboardFormat.SCHEMATIC);
+            saveNbt(file, bot, top, c.getWorld());
             ChatManager.getInstance().sendMessage(p, "&aSaved!", true);
         } catch (Exception e) {
             ChatManager.getInstance().sendMessage(p, "&Error! Check Console.", true);
 
             e.printStackTrace();
         }
+    }
+
+    public void saveNbt(File file, Vector bot, Vector top, org.bukkit.World world) throws IOException {
+        World weWorld = new BukkitWorld(world);
+
+        CuboidRegion region = new CuboidRegion(new BukkitWorld(world), bot, top);
+        Schematic schem = new Schematic(region);
+
+        schem.save(file, ClipboardFormat.STRUCTURE);
     }
 
     public int getPlotHeight(Chunk c) {

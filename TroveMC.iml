@@ -20,7 +20,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.13-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.2" level="project" />
     <orderEntry type="library" name="Maven: com.boydti:fawe-api:latest" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:worldedit:0.2.4a" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.sk89q:worldedit:0.2.4b" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: junit:junit:4.8.1" level="project" />
   </component>
 </module>
