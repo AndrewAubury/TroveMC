@@ -29,6 +29,7 @@ public class InteractionEvents implements Listener {
                 if (s.getLine(0).equals(PlotManager.getInstance().getSignText()[0])) {
 //                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&aRight Clicked Plot Sign", true);
                     PlotManager.getInstance().activateSignClicked(e);
+                    e.setCancelled(true);
                 } else {
 //                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&cRight Clicked other sign", true);
 //                    ChatManager.getInstance().sendMessage(e.getPlayer(),"&cExpected:&r "+PlotManager.getInstance().getSignText()[0], true);

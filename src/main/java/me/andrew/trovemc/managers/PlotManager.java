@@ -3,17 +3,14 @@ package me.andrew.trovemc.managers;
 
 import com.boydti.fawe.object.schematic.Schematic;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.world.World;
 import me.andrew.trovemc.TroveMC;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -153,6 +150,9 @@ public class PlotManager {
 
         Vector size = new Vector(top.getX() - bot.getX() + 1, top.getY() - bot.getY() - 1, top.getZ() - bot.getZ() + 1);
 
+        CuboidRegion region = new CuboidRegion(new BukkitWorld(c.getWorld()), bot, top);
+        LocalSession ls = new LocalSession();
+
 
         try {
             saveNbt(file, bot, top, c.getWorld());
@@ -165,12 +165,17 @@ public class PlotManager {
     }
 
     public void saveNbt(File file, Vector bot, Vector top, org.bukkit.World world) throws IOException {
-        World weWorld = new BukkitWorld(world);
-
         CuboidRegion region = new CuboidRegion(new BukkitWorld(world), bot, top);
-        Schematic schem = new Schematic(region);
 
+        Schematic schem = new Schematic(region);
+        schem.getClipboard();
         schem.save(file, ClipboardFormat.STRUCTURE);
+    }
+
+    public void deactivateAll() {
+        for (Map.Entry<UUID, Chunk> e : activePlots.entrySet()) {
+            deactivatePlot(Bukkit.getPlayer(e.getKey()));
+        }
     }
 
     public int getPlotHeight(Chunk c) {

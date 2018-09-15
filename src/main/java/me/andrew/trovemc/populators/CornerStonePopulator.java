@@ -69,11 +69,11 @@ public class CornerStonePopulator extends BlockPopulator {
 
                             if (loc2.getBlockY() + 1 > finalLowestY) {
                                 int start = finalLowestY;
-                                int curY = start;
-                                while (curY < loc2.getBlockY() + 1) {
+                                int curY = loc2.getBlockY() + 1;
+                                while (curY > finalLowestY) {
                                     Location tmpLoc = locationAtY(loc.clone(), curY);
                                     tmpLoc.getBlock().setType(Material.AIR);
-                                    curY++;
+                                    curY--;
                                 }
                             }
 
