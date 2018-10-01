@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class TroveMC extends JavaPlugin{
 
     @Getter
-    public TroveMC instance;
+    public static TroveMC instance;
 
     @Override
     public void onEnable() {
@@ -30,6 +30,7 @@ public class TroveMC extends JavaPlugin{
         getServer().getPluginManager().registerEvents(new PlotBuildingEvents(), this);
         saveDefaultConfig();
         instance = this;
+        getLogger().info("TroveMC is ready");
     }
 
     @Override
